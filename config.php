@@ -1,10 +1,11 @@
 <?php
 
-class Condig{
+class Database{
     private $host = "localhost";
-    private $db_name = "ToDo";
+    private $db = "ToDo";
     private $user = "root";
     private $password = "root";
+    private $charset = 'utf8mb4';
     public $pdo;
 
     public function __construct() {
@@ -15,13 +16,11 @@ class Condig{
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
         try {
-            $this->pdo = new PDO($dsn, $this->user, $this->pass, $options);
+            $this->pdo = new PDO($dsn, $this->user, $this->password, $options);
         } catch (\PDOException $e) {
             throw new \PDOException($e->getMessage(), (int)$e->getCode());
         }
     }
 }
-
-
 
 ?>
