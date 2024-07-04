@@ -55,17 +55,17 @@ public function save (){
     return $stmt->execute([$this->user_id, $this->taak]);
 }
 
-public static function delete($id) {
+public static function deleteByName($user_id, $name) {
     $database = new Database();
     $pdo = $database->pdo;
-    $stmt = $pdo->prepare('DELETE FROM lists WHERE id = ?');
-    return $stmt->execute([$id]);
+    $stmt = $pdo->prepare('DELETE FROM list WHERE user_id = ? AND taak = ?');
+    return $stmt->execute([$user_id, $name]);
 }
 
 public static function getAllByUserId($user_id) {
     $database = new Database();
     $pdo = $database->pdo;
-    $stmt = $pdo->prepare('SELECT * FROM lists WHERE user_id = ?');
+    $stmt = $pdo->prepare('SELECT * FROM list WHERE user_id = ?');
     $stmt->execute([$user_id]);
     return $stmt->fetchAll();
 }

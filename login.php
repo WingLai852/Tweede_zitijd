@@ -6,11 +6,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
     $user = new User();
-    if ($user->login($username, $password)) {
-        echo "Inloggen succesvol";
-    } else {
-        echo "Ongeldige gebruikersnaam of wachtwoord";
-    }
+    $loggedInUser = $user->login($username, $password);
+  if ($loggedInUser) {
+    session_start();
+    $_SESSION['user_id'] = $loggedInUser['id'];
+    header('Location: dashboard.php');
+    exit();
+  }
 }
 ?>
 
@@ -66,6 +68,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         button:hover {
             background-color: #45a049;
         }
+
+        .register-button {
+            background-color: #008CBA;
+            margin-top: 20px;  
+        }
+        .register-button:hover {
+            background-color: #007BB5;
+        }
         .note {
             text-align: center;
             color: #888;
@@ -87,6 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <button type="submit">Inloggen</button>
         </form>
+        <button onclick="window.location.href='register.php'" class="register-button">Nog geen account? Registreer hier</button>
         <div class="note">Welkom terug! Log in om verder te gaan.</div>
     </div>
 </body>

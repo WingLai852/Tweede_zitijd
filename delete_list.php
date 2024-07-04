@@ -1,15 +1,22 @@
 <?php
-require_once __DIR__.'/classes/user.php';
+require_once __DIR__ . '/classes/User.php';
+require_once __DIR__ . '/classes/List.php';
+session_start();
 
-if($_SERVER['REQUEST_METHOD'] == 'POST'){
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
 
-    $user = new User();
-    if ($user->register($username, $password)){
-        header("Location: login.php");
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $taak = $_POST['taak'];
+    $user_id = $_SESSION['user_id'];
+
+    if (taskList::deleteByName($user_id, $taak)) {
+        header('Location: dashboard.php');
+        exit();
     } else {
-        echo 'Er is iets misgegaan';
+        echo "Er is een fout opgetreden";
     }
 }
 ?>
@@ -17,7 +24,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Registratie</title>
+    <title>Lijst Verwijderen</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -44,8 +51,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
             margin-bottom: 5px;
             display: block;
         }
-        input[type="text"],
-        input[type="password"] {
+        input[type="text"] {
             width: 100%;
             padding: 10px;
             margin-bottom: 15px;
@@ -66,28 +72,18 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         button:hover {
             background-color: #45a049;
         }
-        .note {
-            text-align: center;
-            color: #888;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Registratie</h1>
-        <form action="register.php" method="post">
+        <h1>Lijst Verwijderen</h1>
+        <form action="delete_list.php" method="post">
             <div>
-                <label for="username">Email</label>
-                <input type="text" id="username" name="username" required>
+                <label for="taak">Lijstnaam:</label>
+                <input type="text" id="taak" name="taak" required>
             </div>
-            <div>
-                <label for="password">Wachtwoord:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit">Registreren</button>
+            <button type="submit">Verwijderen</button>
         </form>
-        <div class="note">Welkom op onze school! Registreer om verder te gaan.</div>
     </div>
 </body>
 </html>
