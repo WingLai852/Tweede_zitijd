@@ -2,7 +2,9 @@
 require_once __DIR__ . '/classes/User.php';
 require_once __DIR__ . '/classes/List.php';
 require_once __DIR__ . '/classes/Task.php';
-require_once __DIR__ . '/classes/Comments.php';
+
+
+
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -116,9 +118,7 @@ $lists = taskList::getAllByUserId($user_id);
                 },
                 success: function(response) {
                     if (response.success) {
-                        // Clear the input
                         $('#comment-' + task_id).val('');
-                        // Reload comments
                         loadComments(task_id);
                     } else {
                         alert(response.message);
@@ -158,6 +158,8 @@ $lists = taskList::getAllByUserId($user_id);
                         <input type="hidden" name="delete_list" value="1">
                         <button type="submit" class="delete-button">Verwijderen</button>
                     </form>
+
+
                     <?php
                     $tasks = Task::getAllByListId($list['id']);
                     if ($tasks): ?>
@@ -172,19 +174,6 @@ $lists = taskList::getAllByUserId($user_id);
                                     <input type="hidden" name="delete_task" value="1">
                                     <button type="submit" class="delete-button">Verwijderen</button>
                                 </form>
-                                <div class="comment-section" id="comments-<?php echo $task['id']; ?>">
-                                    <!-- Comments will be loaded here -->
-                                </div>
-                                <div class="comment-form">
-                                    <textarea id="comment-<?php echo $task['id']; ?>" rows="2" cols="50" placeholder="Voeg een commentaar toe"></textarea>
-                                    <button type="button" onclick="addComment(<?php echo $task['id']; ?>)">Commentaar Toevoegen</button>
-                                </div>
-                                <script>
-                                    $(document).ready(function() {
-                                        loadComments(<?php echo $task['id']; ?>);
-                                    });
-                                </script>
-                            </div>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
