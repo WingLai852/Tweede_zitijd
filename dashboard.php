@@ -2,6 +2,7 @@
 require_once __DIR__ . '/classes/User.php';
 require_once __DIR__ . '/classes/List.php';
 require_once __DIR__ . '/classes/Task.php';
+require_once __DIR__ . '/classes/Comments.php';
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -96,6 +97,53 @@ $lists = taskList::getAllByUserId($user_id);
             background-color: #d32f2f;
         }
     </style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function addComment(task_id) {
+            var comment = $('#comment-' + task_id).val();
+            if (comment.trim() === '') {
+                alert('Comment cannot be empty');
+                return;
+            }
+
+            $.ajax({
+                url: 'comment_ajax.php',
+                type: 'POST',
+                data: {
+                    task_id: task_id,
+                    comment: comment
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Clear the input
+                        $('#comment-' + task_id).val('');
+                        // Reload comments
+                        loadComments(task_id);
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Er is een fout opgetreden: ' + error);
+                }
+            });
+        }
+
+        function loadComments(task_id) {
+            $.ajax({
+                url: 'get_comments.php',
+                type: 'GET',
+                data: { task_id: task_id },
+                success: function(response) {
+                    $('#comments-' + task_id).html(response);
+                },
+                error: function(xhr, status, error) {
+                    alert('Er is een fout opgetreden bij het laden van commentaren: ' + error);
+                }
+            });
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -124,6 +172,19 @@ $lists = taskList::getAllByUserId($user_id);
                                     <input type="hidden" name="delete_task" value="1">
                                     <button type="submit" class="delete-button">Verwijderen</button>
                                 </form>
+                                <div class="comment-section" id="comments-<?php echo $task['id']; ?>">
+                                    <!-- Comments will be loaded here -->
+                                </div>
+                                <div class="comment-form">
+                                    <textarea id="comment-<?php echo $task['id']; ?>" rows="2" cols="50" placeholder="Voeg een commentaar toe"></textarea>
+                                    <button type="button" onclick="addComment(<?php echo $task['id']; ?>)">Commentaar Toevoegen</button>
+                                </div>
+                                <script>
+                                    $(document).ready(function() {
+                                        loadComments(<?php echo $task['id']; ?>);
+                                    });
+                                </script>
+                            </div>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
