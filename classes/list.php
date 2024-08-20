@@ -36,7 +36,6 @@ class taskList {
  }
 
  //getters
-
 public function getId(){
     return $this->id;
 }

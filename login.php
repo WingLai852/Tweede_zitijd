@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h1>Inloggen</h1>
         <form action="login.php" method="post">
             <div>
-                <label for="username">Gebruikersnaam:</label>
+                <label for="username">Email:</label>
                 <input type="text" id="username" name="username" required>
             </div>
             <div>
