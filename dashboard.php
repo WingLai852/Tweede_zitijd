@@ -196,7 +196,7 @@ $lists = taskList::getAllByUserId($user_id);
 
     function loadComments(task_id) {
         $.ajax({
-            url: '../ajax/get_comments.php',
+            url: 'ajax/get_comments.php',
             type: 'GET',
             data: { task_id: task_id },
             success: function(response) {

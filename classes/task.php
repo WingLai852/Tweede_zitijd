@@ -3,7 +3,6 @@ require_once __DIR__ . '/../config.php';
 
 class Task {
     private $pdo;
-
     private $id;
     private $list_id;
     private $title;
@@ -107,6 +106,7 @@ class Task {
         $stmt = $pdo->prepare('UPDATE taken SET status = ? WHERE id = ?');
         return $stmt->execute([$status, $task_id]);
     }
+    
 
 }
 
