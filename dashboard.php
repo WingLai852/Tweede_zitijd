@@ -130,14 +130,14 @@ $lists = taskList::getAllByUserId($user_id);
                                     <input type="hidden" name="delete_task" value="1">
                                     <button type="submit" class="delete-button">Verwijderen</button>
                                 </form>
-                                <!-- Comment sectie -->
+                                <div class="comments-section" id="comments-<?php echo $task['id']; ?>">
+                                <!-- Commentaren worden hier geladen -->
                                 <form action="dashboard.php" method="post" class="comment-form" data-task-id="<?php echo htmlspecialchars($task['id']); ?>">
-    <input type="hidden" name="task_id" value="<?php echo htmlspecialchars($task['id']); ?>">
-    <textarea name="comment" id="comment-<?php echo $task['id']; ?>" rows="2" cols="50" placeholder="Voeg een commentaar toe"></textarea>
-    <button type="submit" class="comment-button">Comment</button>
-</form>
-
-
+                                 <input type="hidden" name="task_id" value="<?php echo htmlspecialchars($task['id']); ?>">
+                                 <textarea name="comment" id="comment-<?php echo $task['id']; ?>" rows="2" cols="50" placeholder="Voeg een commentaar toe"></textarea>
+                                 <button type="submit" class="comment-button">Comment</button>
+                                </form>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
@@ -152,5 +152,75 @@ $lists = taskList::getAllByUserId($user_id);
             <a href="add_list.php"><button>Lijst of Taak Toevoegen</button></a>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.comment-form').on('submit', function(e) {
+            e.preventDefault();  // Voorkom dat het formulier op de traditionele manier wordt verzonden
+
+            var form = $(this);
+            var task_id = form.data('task-id');
+            var comment = $('#comment-' + task_id).val().trim();
+
+            if (comment === '') {
+                alert('Comment cannot be empty');
+                return;
+            }
+
+            $.ajax({
+                url: 'ajax/savecomment.php',
+                type: 'POST',
+                data: {
+                    task_id: task_id,
+                    comment: comment
+                },
+                success: function(response) {
+    console.log('Server response:', response);  // Log de respons voor debugging
+    if (response.success) {
+        $('#comments-' + task_id).append('<div>' + response.comment + '</div>');
+        $('#comment-' + task_id).val('');  // Maak het tekstveld leeg
+    } else {
+        alert(response.message);
+    }
+}
+            });
+        });
+    });
+
+    $(document).ready(function() {
+    // Voor elke taak, roep de comments op bij het laden van de pagina
+    $('.task').each(function() {
+        var task_id = $(this).data('task-id');
+        loadComments(task_id);
+    });
+
+    function loadComments(task_id) {
+        $.ajax({
+            url: '../ajax/get_comments.php',
+            type: 'GET',
+            data: { task_id: task_id },
+            success: function(response) {
+                if (response.success) {
+                    var commentsHtml = '';
+                    response.comments.forEach(function(comment) {
+                        commentsHtml += '<div>' + comment.comment + '</div>';
+                    });
+                    $('#comments-' + task_id).html(commentsHtml);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('Er is een fout opgetreden: ' + error);
+            }
+        });
+    }
+});
+
+
+
+
+</script>
+
 </body>
 </html>

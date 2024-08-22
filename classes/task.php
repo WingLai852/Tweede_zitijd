@@ -44,12 +44,10 @@ class Task {
     public function setDeadline($deadline) {
         $this->deadline = $deadline;
     }
-    public function setStatus2($status) {
-        $validStatuses = ['todo', 'done'];
-        if (!in_array($status, $validStatuses)) {
-            throw new Exception("Invalid status value");
-        }
-        $this->status = $status;
+    public function getAllTasksByListId($list_id) {
+        $stmt = $this->pdo->prepare('SELECT * FROM tasks WHERE list_id = ? ORDER BY deadline ASC');
+        $stmt->execute([$list_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // Getters
