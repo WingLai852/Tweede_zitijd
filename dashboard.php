@@ -100,50 +100,6 @@ $lists = taskList::getAllByUserId($user_id);
         }
     </style>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        function addComment(task_id) {
-            var comment = $('#comment-' + task_id).val();
-            if (comment.trim() === '') {
-                alert('Comment cannot be empty');
-                return;
-            }
-
-            $.ajax({
-                url: 'comment_ajax.php',
-                type: 'POST',
-                data: {
-                    task_id: task_id,
-                    comment: comment
-                },
-                success: function(response) {
-                    if (response.success) {
-                        $('#comment-' + task_id).val('');
-                        loadComments(task_id);
-                    } else {
-                        alert(response.message);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    alert('Er is een fout opgetreden: ' + error);
-                }
-            });
-        }
-
-        function loadComments(task_id) {
-            $.ajax({
-                url: 'get_comments.php',
-                type: 'GET',
-                data: { task_id: task_id },
-                success: function(response) {
-                    $('#comments-' + task_id).html(response);
-                },
-                error: function(xhr, status, error) {
-                    alert('Er is een fout opgetreden bij het laden van commentaren: ' + error);
-                }
-            });
-        }
-    </script>
 </head>
 <body>
     <div class="container">
