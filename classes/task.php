@@ -43,10 +43,41 @@ class Task {
     public function setDeadline($deadline) {
         $this->deadline = $deadline;
     }
-    public function getAllTasksByListId($list_id) {
-        $stmt = $this->pdo->prepare('SELECT * FROM tasks WHERE list_id = ? ORDER BY deadline ASC');
+
+    // Methode om alle taken op te halen en resterende dagen te berekenen
+        public function getAllTasksByListId($list_id) {
+        $stmt = $this->pdo->prepare('SELECT * FROM taken WHERE list_id = ? ORDER BY deadline ASC');
         $stmt->execute([$list_id]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        var_dump($tasks);
+
+        // Voor elke taak bereken je de resterende dagen
+        foreach ($tasks as &$task) {
+            $task['remaining_days'] = $this->calculateRemainingDays($task['deadline']);
+        }
+        var_dump($tasks);
+        return $tasks;
+    }
+
+    // Bereken het aantal resterende dagen tot de deadline
+    private function calculateRemainingDays($deadline) {
+        if ($deadline) {
+            $current_date = new DateTime();
+            $deadline_date = new DateTime($deadline);
+            $interval = $current_date->diff($deadline_date);
+            $daysRemaining = (int)$interval->format('%R%a');
+
+            var_dump($deadline, $daysRemaining);
+            if ($daysRemaining > 0) {
+                return "$daysRemaining dagen over";
+            } elseif ($daysRemaining < 0) {
+                return "Deadline is verstreken";
+            } else {
+                return "Deadline is vandaag";
+            }
+        } else {
+            return "Geen deadline";
+        }
     }
 
     // Getters
@@ -87,7 +118,6 @@ class Task {
         $stmt->execute([$list_id]);
         return $stmt->fetchAll();
     }
-    
 
     public static function deleteById($id) {
         $database = new Database();
@@ -95,6 +125,7 @@ class Task {
         $stmt = $pdo->prepare('DELETE FROM taken WHERE id = ?');
         return $stmt->execute([$id]);
     }
+
     public static function updateStatus($task_id, $status) {
         $validStatuses = ['todo', 'done'];
         if (!in_array($status, $validStatuses)) {
@@ -106,9 +137,7 @@ class Task {
         $stmt = $pdo->prepare('UPDATE taken SET status = ? WHERE id = ?');
         return $stmt->execute([$status, $task_id]);
     }
-    
-
 }
-
 ?>
+
 

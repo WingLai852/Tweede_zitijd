@@ -122,9 +122,15 @@ $lists = taskList::getAllByUserId($user_id);
                         <?php foreach ($tasks as $task): ?>
                             <div class="task">
                                 <span><?php echo htmlspecialchars($task['title']); ?></span>
+
                                 <?php if ($task['deadline']): ?>
                                     <span>(<?php echo htmlspecialchars($task['deadline']); ?>)</span>
                                 <?php endif; ?>
+
+                                <?php if (!empty($task['remaining_days'])): ?>
+                                <span><?php echo htmlspecialchars($task['remaining_days']); ?></span>
+                                <?php endif; ?>
+
                                 <form action="dashboard.php" method="post" style="display:inline;">
                                     <input type="hidden" name="task_id" value="<?php echo htmlspecialchars($task['id']); ?>">
                                     <input type="hidden" name="delete_task" value="1">
