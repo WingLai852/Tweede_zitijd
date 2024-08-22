@@ -130,6 +130,14 @@ $lists = taskList::getAllByUserId($user_id);
                                     <input type="hidden" name="delete_task" value="1">
                                     <button type="submit" class="delete-button">Verwijderen</button>
                                 </form>
+                                <!-- Comment sectie -->
+                                <form action="dashboard.php" method="post" class="comment-form" data-task-id="<?php echo htmlspecialchars($task['id']); ?>">
+    <input type="hidden" name="task_id" value="<?php echo htmlspecialchars($task['id']); ?>">
+    <textarea name="comment" id="comment-<?php echo $task['id']; ?>" rows="2" cols="50" placeholder="Voeg een commentaar toe"></textarea>
+    <button type="submit" class="comment-button">Comment</button>
+</form>
+
+
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
